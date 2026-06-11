@@ -14,7 +14,217 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      allowed_emails: {
+        Row: {
+          created_at: string
+          email: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+        }
+        Relationships: []
+      }
+      google_calendar_tokens: {
+        Row: {
+          connected_at: string
+          connection_api_key: string
+          user_id: string
+        }
+        Insert: {
+          connected_at?: string
+          connection_api_key: string
+          user_id: string
+        }
+        Update: {
+          connected_at?: string
+          connection_api_key?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string
+          full_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email: string
+          full_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      shortcuts: {
+        Row: {
+          created_at: string
+          icone: string | null
+          id: string
+          nome: string
+          ordem: number
+          url: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          icone?: string | null
+          id?: string
+          nome: string
+          ordem?: number
+          url: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          icone?: string | null
+          id?: string
+          nome?: string
+          ordem?: number
+          url?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      task_attachments: {
+        Row: {
+          created_at: string
+          file_name: string
+          id: string
+          mime_type: string | null
+          size_bytes: number | null
+          storage_path: string
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          file_name: string
+          id?: string
+          mime_type?: string | null
+          size_bytes?: number | null
+          storage_path: string
+          task_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          file_name?: string
+          id?: string
+          mime_type?: string | null
+          size_bytes?: number | null
+          storage_path?: string
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_attachments_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tasks: {
+        Row: {
+          concluida_em: string | null
+          created_at: string
+          data: string
+          descricao: string | null
+          id: string
+          nup: string | null
+          origem: string | null
+          parent_task_id: string | null
+          prazo: string | null
+          prioridade: Database["public"]["Enums"]["task_priority"]
+          publicacao: boolean
+          publicacao_data: string | null
+          publicacao_numero: string | null
+          recorrencia: Database["public"]["Enums"]["task_recurrence"]
+          responsavel: string | null
+          solucao: string | null
+          status: Database["public"]["Enums"]["task_status"]
+          tipo: Database["public"]["Enums"]["task_type"]
+          titulo: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          concluida_em?: string | null
+          created_at?: string
+          data?: string
+          descricao?: string | null
+          id?: string
+          nup?: string | null
+          origem?: string | null
+          parent_task_id?: string | null
+          prazo?: string | null
+          prioridade?: Database["public"]["Enums"]["task_priority"]
+          publicacao?: boolean
+          publicacao_data?: string | null
+          publicacao_numero?: string | null
+          recorrencia?: Database["public"]["Enums"]["task_recurrence"]
+          responsavel?: string | null
+          solucao?: string | null
+          status?: Database["public"]["Enums"]["task_status"]
+          tipo?: Database["public"]["Enums"]["task_type"]
+          titulo: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          concluida_em?: string | null
+          created_at?: string
+          data?: string
+          descricao?: string | null
+          id?: string
+          nup?: string | null
+          origem?: string | null
+          parent_task_id?: string | null
+          prazo?: string | null
+          prioridade?: Database["public"]["Enums"]["task_priority"]
+          publicacao?: boolean
+          publicacao_data?: string | null
+          publicacao_numero?: string | null
+          recorrencia?: Database["public"]["Enums"]["task_recurrence"]
+          responsavel?: string | null
+          solucao?: string | null
+          status?: Database["public"]["Enums"]["task_status"]
+          tipo?: Database["public"]["Enums"]["task_type"]
+          titulo?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_parent_task_id_fkey"
+            columns: ["parent_task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +233,10 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      task_priority: "altissima" | "alta" | "media" | "baixa" | "irrelevante"
+      task_recurrence: "nenhuma" | "diaria" | "semanal" | "mensal" | "anual"
+      task_status: "pendente" | "concluida"
+      task_type: "pessoal" | "profissional"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +363,11 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      task_priority: ["altissima", "alta", "media", "baixa", "irrelevante"],
+      task_recurrence: ["nenhuma", "diaria", "semanal", "mensal", "anual"],
+      task_status: ["pendente", "concluida"],
+      task_type: ["pessoal", "profissional"],
+    },
   },
 } as const
