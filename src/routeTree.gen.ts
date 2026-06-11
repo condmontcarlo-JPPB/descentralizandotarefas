@@ -11,7 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedPrincipalRouteImport } from './routes/_authenticated/principal'
 import { Route as AuthenticatedHistoricoRouteImport } from './routes/_authenticated/historico'
@@ -29,7 +29,7 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
@@ -41,23 +41,23 @@ const IndexRoute = IndexRouteImport.update({
 const AuthenticatedPrincipalRoute = AuthenticatedPrincipalRouteImport.update({
   id: '/principal',
   path: '/principal',
-  getParentRoute: () => AuthenticatedRouteRoute,
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedHistoricoRoute = AuthenticatedHistoricoRouteImport.update({
   id: '/historico',
   path: '/historico',
-  getParentRoute: () => AuthenticatedRouteRoute,
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedConfiguracoesRoute =
   AuthenticatedConfiguracoesRouteImport.update({
     id: '/configuracoes',
     path: '/configuracoes',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedCadastroRoute = AuthenticatedCadastroRouteImport.update({
   id: '/cadastro',
   path: '/cadastro',
-  getParentRoute: () => AuthenticatedRouteRoute,
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedCadastroIdRoute = AuthenticatedCadastroIdRouteImport.update({
   id: '/$id',
@@ -88,7 +88,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/cadastro': typeof AuthenticatedCadastroRouteWithChildren
@@ -133,7 +133,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AuthRoute: typeof AuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
 }
@@ -158,7 +158,7 @@ declare module '@tanstack/react-router' {
       id: '/_authenticated'
       path: ''
       fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -173,28 +173,28 @@ declare module '@tanstack/react-router' {
       path: '/principal'
       fullPath: '/principal'
       preLoaderRoute: typeof AuthenticatedPrincipalRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/historico': {
       id: '/_authenticated/historico'
       path: '/historico'
       fullPath: '/historico'
       preLoaderRoute: typeof AuthenticatedHistoricoRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/configuracoes': {
       id: '/_authenticated/configuracoes'
       path: '/configuracoes'
       fullPath: '/configuracoes'
       preLoaderRoute: typeof AuthenticatedConfiguracoesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/cadastro': {
       id: '/_authenticated/cadastro'
       path: '/cadastro'
       fullPath: '/cadastro'
       preLoaderRoute: typeof AuthenticatedCadastroRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/cadastro/$id': {
       id: '/_authenticated/cadastro/$id'
@@ -219,29 +219,40 @@ const AuthenticatedCadastroRouteWithChildren =
     AuthenticatedCadastroRouteChildren,
   )
 
-interface AuthenticatedRouteRouteChildren {
+interface AuthenticatedRouteChildren {
   AuthenticatedCadastroRoute: typeof AuthenticatedCadastroRouteWithChildren
   AuthenticatedConfiguracoesRoute: typeof AuthenticatedConfiguracoesRoute
   AuthenticatedHistoricoRoute: typeof AuthenticatedHistoricoRoute
   AuthenticatedPrincipalRoute: typeof AuthenticatedPrincipalRoute
 }
 
-const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedCadastroRoute: AuthenticatedCadastroRouteWithChildren,
   AuthenticatedConfiguracoesRoute: AuthenticatedConfiguracoesRoute,
   AuthenticatedHistoricoRoute: AuthenticatedHistoricoRoute,
   AuthenticatedPrincipalRoute: AuthenticatedPrincipalRoute,
 }
 
-const AuthenticatedRouteRouteWithChildren =
-  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AuthRoute: AuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
