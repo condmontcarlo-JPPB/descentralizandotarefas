@@ -197,8 +197,8 @@ function AgendaPage() {
               const t = info.event.extendedProps.task as Task;
               navigate({ to: "/cadastro/$id", params: { id: t.id } });
             }}
-            dateClick={(info) => {
-              navigate({ to: "/cadastro", search: { data: info.dateStr } as never });
+            dateClick={() => {
+              navigate({ to: "/cadastro" });
             }}
           />
         </div>
