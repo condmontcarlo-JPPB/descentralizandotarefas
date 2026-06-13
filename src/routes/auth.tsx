@@ -185,7 +185,7 @@ function AuthPage() {
                   <Input id="name" required value={fullName} onChange={(e) => setFullName(e.target.value)} />
                 </div>
                 <div>
-                  <Label htmlFor="email-s">E-mail autorizado</Label>
+                  <Label htmlFor="email-s">E-mail</Label>
                   <Input id="email-s" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
                 </div>
                 <div>
@@ -201,7 +201,7 @@ function AuthPage() {
           </Tabs>
         </Card>
         <p className="text-xs text-muted-foreground text-center mt-4">
-          Apenas e-mails da lista autorizada conseguem entrar.
+          Aberto a qualquer usuário. Use "Esqueci minha senha" para redefinir o acesso.
         </p>
       </div>
     </div>
