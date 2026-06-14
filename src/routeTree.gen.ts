@@ -19,6 +19,7 @@ import { Route as AuthenticatedHistoricoRouteImport } from './routes/_authentica
 import { Route as AuthenticatedConfiguracoesRouteImport } from './routes/_authenticated/configuracoes'
 import { Route as AuthenticatedCadastroRouteImport } from './routes/_authenticated/cadastro'
 import { Route as AuthenticatedAgendaRouteImport } from './routes/_authenticated/agenda'
+import { Route as AuthenticatedProcessosIdRouteImport } from './routes/_authenticated/processos.$id'
 import { Route as AuthenticatedCadastroIdRouteImport } from './routes/_authenticated/cadastro.$id'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -71,6 +72,12 @@ const AuthenticatedAgendaRoute = AuthenticatedAgendaRouteImport.update({
   path: '/agenda',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedProcessosIdRoute =
+  AuthenticatedProcessosIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedProcessosRoute,
+  } as any)
 const AuthenticatedCadastroIdRoute = AuthenticatedCadastroIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -86,8 +93,9 @@ export interface FileRoutesByFullPath {
   '/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/historico': typeof AuthenticatedHistoricoRoute
   '/principal': typeof AuthenticatedPrincipalRoute
-  '/processos': typeof AuthenticatedProcessosRoute
+  '/processos': typeof AuthenticatedProcessosRouteWithChildren
   '/cadastro/$id': typeof AuthenticatedCadastroIdRoute
+  '/processos/$id': typeof AuthenticatedProcessosIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -98,8 +106,9 @@ export interface FileRoutesByTo {
   '/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/historico': typeof AuthenticatedHistoricoRoute
   '/principal': typeof AuthenticatedPrincipalRoute
-  '/processos': typeof AuthenticatedProcessosRoute
+  '/processos': typeof AuthenticatedProcessosRouteWithChildren
   '/cadastro/$id': typeof AuthenticatedCadastroIdRoute
+  '/processos/$id': typeof AuthenticatedProcessosIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -112,8 +121,9 @@ export interface FileRoutesById {
   '/_authenticated/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/_authenticated/historico': typeof AuthenticatedHistoricoRoute
   '/_authenticated/principal': typeof AuthenticatedPrincipalRoute
-  '/_authenticated/processos': typeof AuthenticatedProcessosRoute
+  '/_authenticated/processos': typeof AuthenticatedProcessosRouteWithChildren
   '/_authenticated/cadastro/$id': typeof AuthenticatedCadastroIdRoute
+  '/_authenticated/processos/$id': typeof AuthenticatedProcessosIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -128,6 +138,7 @@ export interface FileRouteTypes {
     | '/principal'
     | '/processos'
     | '/cadastro/$id'
+    | '/processos/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -140,6 +151,7 @@ export interface FileRouteTypes {
     | '/principal'
     | '/processos'
     | '/cadastro/$id'
+    | '/processos/$id'
   id:
     | '__root__'
     | '/'
@@ -153,6 +165,7 @@ export interface FileRouteTypes {
     | '/_authenticated/principal'
     | '/_authenticated/processos'
     | '/_authenticated/cadastro/$id'
+    | '/_authenticated/processos/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -234,6 +247,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAgendaRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/processos/$id': {
+      id: '/_authenticated/processos/$id'
+      path: '/$id'
+      fullPath: '/processos/$id'
+      preLoaderRoute: typeof AuthenticatedProcessosIdRouteImport
+      parentRoute: typeof AuthenticatedProcessosRoute
+    }
     '/_authenticated/cadastro/$id': {
       id: '/_authenticated/cadastro/$id'
       path: '/$id'
@@ -257,13 +277,27 @@ const AuthenticatedCadastroRouteWithChildren =
     AuthenticatedCadastroRouteChildren,
   )
 
+interface AuthenticatedProcessosRouteChildren {
+  AuthenticatedProcessosIdRoute: typeof AuthenticatedProcessosIdRoute
+}
+
+const AuthenticatedProcessosRouteChildren: AuthenticatedProcessosRouteChildren =
+  {
+    AuthenticatedProcessosIdRoute: AuthenticatedProcessosIdRoute,
+  }
+
+const AuthenticatedProcessosRouteWithChildren =
+  AuthenticatedProcessosRoute._addFileChildren(
+    AuthenticatedProcessosRouteChildren,
+  )
+
 interface AuthenticatedRouteChildren {
   AuthenticatedAgendaRoute: typeof AuthenticatedAgendaRoute
   AuthenticatedCadastroRoute: typeof AuthenticatedCadastroRouteWithChildren
   AuthenticatedConfiguracoesRoute: typeof AuthenticatedConfiguracoesRoute
   AuthenticatedHistoricoRoute: typeof AuthenticatedHistoricoRoute
   AuthenticatedPrincipalRoute: typeof AuthenticatedPrincipalRoute
-  AuthenticatedProcessosRoute: typeof AuthenticatedProcessosRoute
+  AuthenticatedProcessosRoute: typeof AuthenticatedProcessosRouteWithChildren
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -272,7 +306,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedConfiguracoesRoute: AuthenticatedConfiguracoesRoute,
   AuthenticatedHistoricoRoute: AuthenticatedHistoricoRoute,
   AuthenticatedPrincipalRoute: AuthenticatedPrincipalRoute,
-  AuthenticatedProcessosRoute: AuthenticatedProcessosRoute,
+  AuthenticatedProcessosRoute: AuthenticatedProcessosRouteWithChildren,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
