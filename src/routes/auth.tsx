@@ -77,10 +77,7 @@ function AuthPage() {
     });
     setLoading(false);
     if (error) {
-      const msg = /autorizado/i.test(error.message)
-        ? "Este e-mail não está autorizado a usar o Planejador."
-        : error.message;
-      toast.error("Erro ao criar conta", { description: msg });
+      toast.error("Erro ao criar conta", { description: error.message });
       return;
     }
     toast.success("Conta criada", { description: "Verifique seu e-mail para confirmar." });
@@ -110,10 +107,30 @@ function AuthPage() {
             <CalendarCheck className="h-7 w-7 text-primary" />
           </div>
           <h1 className="text-2xl font-bold">Planejador de Tarefas</h1>
-          <p className="text-sm text-muted-foreground">Acesso restrito aos usuários autorizados</p>
+          <p className="text-sm text-muted-foreground">Crie sua conta e organize suas tarefas</p>
         </div>
 
         <Card className="p-6">
+          {tab === "forgot" ? (
+            <form onSubmit={handleForgot} className="space-y-3">
+              <h2 className="font-semibold">Redefinir senha</h2>
+              <p className="text-sm text-muted-foreground">
+                Informe seu e-mail. Enviaremos um link para você criar uma nova senha.
+              </p>
+              <div>
+                <Label htmlFor="email-fp">E-mail</Label>
+                <Input id="email-fp" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+              </div>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                Enviar instruções
+              </Button>
+              <Button type="button" variant="ghost" className="w-full" onClick={() => setTab("login")}>
+                Voltar
+              </Button>
+            </form>
+          ) : (
+          <>
           <Button
             type="button"
             variant="outline"
@@ -141,22 +158,7 @@ function AuthPage() {
             </TabsList>
 
             <TabsContent value="login">
-              {tab === "forgot" ? (
-                <form onSubmit={handleForgot} className="space-y-3 mt-4">
-                  <div>
-                    <Label htmlFor="email-fp">E-mail</Label>
-                    <Input id="email-fp" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
-                  </div>
-                  <Button type="submit" className="w-full" disabled={loading}>
-                    {loading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-                    Enviar instruções
-                  </Button>
-                  <Button type="button" variant="ghost" className="w-full" onClick={() => setTab("login")}>
-                    Voltar
-                  </Button>
-                </form>
-              ) : (
-                <form onSubmit={handleLogin} className="space-y-3 mt-4">
+              <form onSubmit={handleLogin} className="space-y-3 mt-4">
                   <div>
                     <Label htmlFor="email">E-mail</Label>
                     <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
@@ -177,8 +179,7 @@ function AuthPage() {
                   <button type="button" className="text-sm text-primary hover:underline w-full text-center" onClick={() => setTab("forgot")}>
                     Esqueci minha senha
                   </button>
-                </form>
-              )}
+              </form>
             </TabsContent>
 
             <TabsContent value="signup">
@@ -188,7 +189,7 @@ function AuthPage() {
                   <Input id="name" required value={fullName} onChange={(e) => setFullName(e.target.value)} />
                 </div>
                 <div>
-                  <Label htmlFor="email-s">E-mail autorizado</Label>
+                  <Label htmlFor="email-s">E-mail</Label>
                   <Input id="email-s" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
                 </div>
                 <div>
@@ -202,9 +203,11 @@ function AuthPage() {
               </form>
             </TabsContent>
           </Tabs>
+          </>
+          )}
         </Card>
         <p className="text-xs text-muted-foreground text-center mt-4">
-          Apenas e-mails da lista autorizada conseguem entrar.
+          Aberto a qualquer usuário. Use "Esqueci minha senha" para redefinir o acesso.
         </p>
       </div>
     </div>
